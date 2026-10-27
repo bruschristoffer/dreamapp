@@ -3,5 +3,18 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
+  },
+  "workbench.colorCustomizations": {
+    "glaze.active": "Default Light+",
+    "[Default Light+]": {
+      "titleBar.activeBackground": "#d9c9ea",
+      "titleBar.activeForeground": "#08070a",
+      "titleBar.inactiveBackground": "#ddd2e9",
+      "titleBar.inactiveForeground": "#312c35",
+      "statusBar.background": "#d5c1e9",
+      "statusBar.foreground": "#08070a",
+      "activityBar.background": "#e1d6ed",
+      "activityBar.foreground": "#0e0b0f"
+    }
   }
 }
