@@ -5,26 +5,12 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Inställningar & Profil</Text>
-        <Text style={styles.subtitle}>Hantera ditt konto och preferenser</Text>
+   <Text style={styles.title}>Min profil</Text>
       </View>
+<View style={styles.card}>
+  <Text style={styles.cardTitle}>Mitt konto</Text>
+</View>
 
-      {/* Användarinfo */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Inloggad användare</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Namn:</Text>
-          <Text style={styles.infoValue}>Demo Användare</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>E-post:</Text>
-          <Text style={styles.infoValue}>anvandare@example.com</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Sparade böcker:</Text>
-          <Text style={styles.infoValue}>1 st</Text>
-        </View>
-      </View>
 
 
       {/* Logga ut */}
