@@ -74,9 +74,9 @@ export default function RegisterScreen() {
   <Text style={styles.primaryButtonText}>Skapa konto</Text>
 </Pressable>
 
-        <Link href="/(auth)/login" style={[styles.button, styles.secondaryButton]}>
-          <Text style={styles.secondaryButtonText}>Har du redan ett konto? Logga in</Text>
-        </Link>
+        <Link href="/(auth)/login" style={styles.loginLink}>
+  Har du redan ett konto? Logga in
+</Link>
       </View>
     </View>
   );
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   primaryButton: {
-    backgroundColor: "#2563eb",
-  },
+  backgroundColor: "#000000",
+},
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
@@ -151,4 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+  loginLink: {
+  color: "#000000",
+  fontSize: 14,
+  textAlign: "center",
+  marginTop: 8,
+},
 });

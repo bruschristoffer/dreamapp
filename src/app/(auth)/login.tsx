@@ -51,13 +51,10 @@ export default function LoginScreen() {
 >
   <Text style={styles.primaryButtonText}>Logga in</Text>
 </Pressable>
-        <Link
-  href="/(auth)/register"
-  style={[styles.button, styles.secondaryButton]}
->
-  <Text style={styles.secondaryButtonText}>Registrera</Text>
+        
+  <Link href="/(auth)/register" style={styles.registerLink}>
+  Registrera
 </Link>
-
         
 
         
@@ -104,8 +101,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   primaryButton: {
-    backgroundColor: "#2563eb",
-  },
+  backgroundColor: "#000000",
+},
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
@@ -128,5 +125,11 @@ const styles = StyleSheet.create({
     color: "#2563eb",
     textAlign: "center",
   },
+  registerLink: {
+  color: "#000000",
+  fontSize: 14,
+  textAlign: "center",
+  marginTop: 8,
+},
 });
 
