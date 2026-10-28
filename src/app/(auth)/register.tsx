@@ -1,40 +1,78 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function RegisterScreen() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const handleRegister = () => {
+  if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+    alert("Fyll i alla fält");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Lösenorden matchar inte");
+    return;
+  }
+
+  alert("Formuläret är korrekt ifyllt");
+};
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Skapa konto</Text>
       <Text style={styles.subtitle}>Börja hålla koll på dina böcker</Text>
 
-      {/* Placeholders för inmatningsfält */}
       <View style={styles.formPlaceholder}>
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>Namn</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: fullständigt namn]</Text>
-        </View>
+  <Text>Namn</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Skriv ditt namn"
+    value={name}
+    onChangeText={setName}
+  />
 
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>E-post</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: e-postadress]</Text>
-        </View>
+  <Text>E-post</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Skriv din e-post"
+    value={email}
+    onChangeText={setEmail}
+    autoCapitalize="none"
+    keyboardType="email-address"
+  />
 
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>Lösenord</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: lösenord]</Text>
-        </View>
+  <Text>Lösenord</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Skriv lösenord"
+    value={password}
+    onChangeText={setPassword}
+    secureTextEntry
+  />
 
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>Bekräfta lösenord</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: upprepa lösenord]</Text>
-        </View>
-      </View>
+  <Text>Bekräfta lösenord</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Upprepa lösenord"
+    value={confirmPassword}
+    onChangeText={setConfirmPassword}
+    secureTextEntry
+  />
+</View>
+
 
       {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
-        <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
-          <Text style={styles.primaryButtonText}>Registrera & Logga in</Text>
-        </Link>
+        <Pressable
+  style={[styles.button, styles.primaryButton]}
+  onPress={handleRegister}
+>
+  <Text style={styles.primaryButtonText}>Skapa konto</Text>
+</Pressable>
 
         <Link href="/(auth)/login" style={[styles.button, styles.secondaryButton]}>
           <Text style={styles.secondaryButtonText}>Har du redan ett konto? Logga in</Text>

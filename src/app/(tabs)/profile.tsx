@@ -26,18 +26,6 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Inställnings-placeholders */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Appinställningar</Text>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingLabel}>Aviseringar</Text>
-          <Text style={styles.settingPlaceholder}>[Placeholder: På]</Text>
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingLabel}>Mörkt läge</Text>
-          <Text style={styles.settingPlaceholder}>[Placeholder: Av]</Text>
-        </View>
-      </View>
 
       {/* Logga ut */}
       <View style={styles.actions}>

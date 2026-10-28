@@ -1,43 +1,70 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const handleLogin = () => {
+  if (!username.trim() || !password) {
+    alert("Fyll i användarnamn och lösenord");
+    return;
+  }
+
+  alert("Fälten är ifyllda");
+};
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Logga in</Text>
-      <Text style={styles.subtitle}>Välkommen till Boklista</Text>
+    <Text style={styles.title}>BookList</Text>
+<Text style={styles.subtitle}>
+  Spara böcker du vill läsa och håll koll på vad du läst.
+</Text>
 
-      {/* Placeholders för inmatningsfält */}
-      <View style={styles.formPlaceholder}>
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>Användarnamn / E-post</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: e-postadress]</Text>
-        </View>
 
-        <View style={styles.inputPlaceholder}>
-          <Text style={styles.inputLabel}>Lösenord</Text>
-          <Text style={styles.inputTextPlaceholder}>[Inmatningsfält: lösenord]</Text>
-        </View>
-      </View>
+    <View style={styles.formPlaceholder}>
+  <Text style={{ fontSize: 18, fontWeight: "bold" }}>Logga in</Text>
+  <Text>Användarnamn</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Användarnamn"
+    value={username}
+    onChangeText={setUsername}
+    autoCapitalize="none"
+  />
+
+  <Text>Lösenord</Text>
+  <TextInput
+    style={styles.inputPlaceholder}
+    placeholder="Lösenord"
+    value={password}
+    onChangeText={setPassword}
+    secureTextEntry
+  />
+</View>
 
       {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
-        <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
-          <Text style={styles.primaryButtonText}>Logga in</Text>
-        </Link>
+        <Pressable
+  style={[styles.button, styles.primaryButton]}
+  onPress={handleLogin}
+>
+  <Text style={styles.primaryButtonText}>Logga in</Text>
+</Pressable>
+        <Link
+  href="/(auth)/register"
+  style={[styles.button, styles.secondaryButton]}
+>
+  <Text style={styles.secondaryButtonText}>Registrera</Text>
+</Link>
 
-        <Link href="/(auth)/register" style={[styles.button, styles.secondaryButton]}>
-          <Text style={styles.secondaryButtonText}>Skapa konto</Text>
-        </Link>
+        
 
-        <Link href="/(tabs)" style={styles.linkText}>
-          <Text style={styles.link}>Hoppa över / Fortsätt till appen</Text>
-        </Link>
+        
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -46,44 +73,32 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1a1a1a",
-    marginBottom: 8,
-  },
+  fontSize: 28,
+  fontWeight: "bold",
+  marginBottom: 8,
+  textAlign: "center",
+},
   subtitle: {
-    fontSize: 16,
-    color: "#666666",
-    marginBottom: 32,
-  },
+  fontSize: 16,
+  color: "#666666",
+  marginBottom: 32,
+  textAlign: "center",
+},
   formPlaceholder: {
     gap: 16,
     marginBottom: 24,
   },
   inputPlaceholder: {
     padding: 14,
-    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
-    backgroundColor: "#f9f9f9",
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#444444",
-    marginBottom: 4,
-  },
-  inputTextPlaceholder: {
-    fontSize: 14,
-    color: "#999999",
+    borderColor: "#dddddd",
+    borderRadius: 8,
   },
   actions: {
     gap: 12,
-    alignItems: "stretch",
   },
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    padding: 14,
     borderRadius: 8,
     textAlign: "center",
     overflow: "hidden",
@@ -94,7 +109,6 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
-    fontSize: 16,
     textAlign: "center",
   },
   secondaryButton: {
@@ -104,8 +118,6 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: "#1e293b",
-    fontWeight: "600",
-    fontSize: 16,
     textAlign: "center",
   },
   linkText: {
@@ -114,7 +126,7 @@ const styles = StyleSheet.create({
   },
   link: {
     color: "#2563eb",
-    fontSize: 14,
     textAlign: "center",
   },
 });
+
