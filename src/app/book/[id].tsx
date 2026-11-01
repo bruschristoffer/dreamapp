@@ -1,12 +1,14 @@
 import { Link, useLocalSearchParams } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-
+  const [status, setStatus] = useState("Läser");
+  const [title, setTitle] = useState("Aniara");
+  const [author, setAuthor] = useState("Harry Martinson");
   return (
     <View style={styles.container}>
-      {/* Bokinformation */}
       <View style={styles.card}>
         <Text style={styles.badge}>Bok ID: {id ?? "okänt"}</Text>
         <Text style={styles.title}>Aniara</Text>
@@ -14,7 +16,7 @@ export default function BookDetailScreen() {
 
         <View style={styles.metaRow}>
           <Text style={styles.metaLabel}>Nuvarande status:</Text>
-          <Text style={styles.metaValue}>Läser just nu</Text>
+          <Text style={styles.metaValue}>{status}</Text>
         </View>
 
         <View style={styles.metaRow}>
@@ -28,19 +30,29 @@ export default function BookDetailScreen() {
         </View>
       </View>
 
-      {/* Uppdatera status (CRUD: Update) */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Uppdatera lässtatus</Text>
         <View style={styles.statusButtons}>
-          <View style={styles.statusButton}>
-            <Text style={styles.statusButtonText}>Vill läsa</Text>
-          </View>
-          <View style={[styles.statusButton, styles.statusButtonActive]}>
-            <Text style={styles.statusButtonTextActive}>Läser</Text>
-          </View>
-          <View style={styles.statusButton}>
-            <Text style={styles.statusButtonText}>Läst</Text>
-          </View>
+          {["Vill läsa", "Läser", "Läst"].map((option) => (
+            <Pressable
+              key={option}
+              onPress={() => setStatus(option)}
+              style={[
+                styles.statusButton,
+                status === option && styles.statusButtonActive,
+              ]}
+            >
+              <Text
+                style={
+                  status === option
+                    ? styles.statusButtonTextActive
+                    : styles.statusButtonText
+                }
+              >
+                {option}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </View>
 
