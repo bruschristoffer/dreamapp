@@ -1,10 +1,6 @@
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
-  // Placeholder för auth guard:
-  // T.ex. const isAuthenticated = false;
-  // if (!isAuthenticated) return <Redirect href="/(auth)/login" />;
-
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -14,6 +10,13 @@ export default function RootLayout() {
         options={{
           headerShown: true,
           title: "Bokdetaljer",
+        }}
+      />
+      <Stack.Screen
+        name="list/[id]"
+        options={{
+          headerShown: true,
+          title: "Läslista",
         }}
       />
     </Stack>
