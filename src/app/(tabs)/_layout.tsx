@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs} from "expo-router";
 
 export default function TabLayout() {
   return (
@@ -51,6 +51,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
+              size={24}
+              color={color as string}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reading-lists"
+        options={{
+          title: "Mina läslistor",
+          tabBarLabel: "Läslistor",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "list" : "list-outline"}
               size={24}
               color={color as string}
             />
