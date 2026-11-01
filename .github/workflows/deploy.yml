@@ -1,0 +1,23 @@
+name: CI/CD Docker Build
+
+on:
+  push:
+    branches: ["main", "master", "feature/**"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker Image
+        run: |
+          cd backend
+          docker build -t dreamapp-backend:latest .
