@@ -56,7 +56,6 @@ export default function BookDetailScreen() {
         </View>
       </View>
 
-      {/* Åtgärder: Ta bort bok & Navigering (CRUD: Delete) */}
       <View style={styles.actions}>
         <View style={styles.deleteButtonPlaceholder}>
           <Text style={styles.deleteButtonText}>Ta bort bok (Placeholder)</Text>

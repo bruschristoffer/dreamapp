@@ -7,7 +7,6 @@ export default function RegisterScreen() {
       <Text style={styles.title}>Skapa konto</Text>
       <Text style={styles.subtitle}>Börja hålla koll på dina böcker</Text>
 
-      {/* Placeholders för inmatningsfält */}
       <View style={styles.formPlaceholder}>
         <View style={styles.inputPlaceholder}>
           <Text style={styles.inputLabel}>Namn</Text>
@@ -30,7 +29,6 @@ export default function RegisterScreen() {
         </View>
       </View>
 
-      {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
         <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
           <Text style={styles.primaryButtonText}>Registrera & Logga in</Text>

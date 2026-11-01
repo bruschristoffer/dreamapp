@@ -7,7 +7,6 @@ export default function LoginScreen() {
       <Text style={styles.title}>Logga in</Text>
       <Text style={styles.subtitle}>Välkommen till Boklista</Text>
 
-      {/* Placeholders för inmatningsfält */}
       <View style={styles.formPlaceholder}>
         <View style={styles.inputPlaceholder}>
           <Text style={styles.inputLabel}>Användarnamn / E-post</Text>
@@ -20,7 +19,6 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
         <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
           <Text style={styles.primaryButtonText}>Logga in</Text>

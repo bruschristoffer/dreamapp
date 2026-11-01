@@ -9,7 +9,6 @@ export default function ProfileScreen() {
         <Text style={styles.subtitle}>Hantera ditt konto och preferenser</Text>
       </View>
 
-      {/* Användarinfo */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Inloggad användare</Text>
         <View style={styles.infoRow}>
@@ -26,7 +25,6 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Inställnings-placeholders */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Appinställningar</Text>
         <View style={styles.settingItem}>
@@ -39,7 +37,6 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Logga ut */}
       <View style={styles.actions}>
         <Link href="/(auth)/login" style={[styles.button, styles.logoutButton]}>
           <Text style={styles.logoutButtonText}>Logga ut</Text>

@@ -11,7 +11,6 @@ export default function AddBookScreen() {
         </Text>
       </View>
 
-      {/* Formulär-placeholders */}
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Titel</Text>
@@ -43,7 +42,6 @@ export default function AddBookScreen() {
         </View>
       </View>
 
-      {/* Knappar och navigering */}
       <View style={styles.actions}>
         <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
           <Text style={styles.primaryButtonText}>Spara bok</Text>
