@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -57,8 +58,21 @@ export default function ReadingListsScreen() {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item, index }) => (
           <View style={styles.listCard}>
-            <Text style={styles.listName}>{item}</Text>
-
+            <Link
+              href={{
+                pathname: "/list/[id]",
+                params: {
+                  id: index.toString(),
+                  name: item,
+                },
+              }}
+              asChild
+            >
+              <Pressable style={styles.listLink}>
+                <Text style={styles.listName}>{item}</Text>
+                <Ionicons name="chevron-forward" size={20} color="#64748b" />
+              </Pressable>
+            </Link>
             <Pressable onPress={() => handleDeleteList(index)}>
               <Ionicons name="trash-outline" size={22} color="#ef4444" />
             </Pressable>
@@ -143,6 +157,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#0f172a",
+  },
+  listLink: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginRight: 16,
   },
   emptyText: {
     fontSize: 14,
