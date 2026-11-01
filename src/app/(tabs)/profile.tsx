@@ -5,38 +5,15 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Inställningar & Profil</Text>
-        <Text style={styles.subtitle}>Hantera ditt konto och preferenser</Text>
+   <Text style={styles.title}>Min profil</Text>
       </View>
+<View style={styles.card}>
+  <Text style={styles.cardTitle}>Mitt konto</Text>
+</View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Inloggad användare</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Namn:</Text>
-          <Text style={styles.infoValue}>Demo Användare</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>E-post:</Text>
-          <Text style={styles.infoValue}>anvandare@example.com</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Sparade böcker:</Text>
-          <Text style={styles.infoValue}>1 st</Text>
-        </View>
-      </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Appinställningar</Text>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingLabel}>Aviseringar</Text>
-          <Text style={styles.settingPlaceholder}>[Placeholder: På]</Text>
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingLabel}>Mörkt läge</Text>
-          <Text style={styles.settingPlaceholder}>[Placeholder: Av]</Text>
-        </View>
-      </View>
 
+      {/* Logga ut */}
       <View style={styles.actions}>
         <Link href="/(auth)/login" style={[styles.button, styles.logoutButton]}>
           <Text style={styles.logoutButtonText}>Logga ut</Text>
