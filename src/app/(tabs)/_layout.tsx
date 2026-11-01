@@ -57,6 +57,13 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="reading-lists"
+        options={{
+          title: "Mina läslistor",
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
