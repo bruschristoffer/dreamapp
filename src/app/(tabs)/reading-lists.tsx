@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
   FlatList,
@@ -19,6 +20,12 @@ export default function ReadingListsScreen() {
 
     setLists((previousLists) => [...previousLists, name]);
     setListName("");
+  };
+
+  const handleDeleteList = (indexToDelete: number) => {
+    setLists((previousLists) =>
+      previousLists.filter((_, index) => index !== indexToDelete),
+    );
   };
 
   return (
@@ -48,9 +55,13 @@ export default function ReadingListsScreen() {
       <FlatList
         data={lists}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.listCard}>
             <Text style={styles.listName}>{item}</Text>
+
+            <Pressable onPress={() => handleDeleteList(index)}>
+              <Ionicons name="trash-outline" size={22} color="#ef4444" />
+            </Pressable>
           </View>
         )}
         ListEmptyComponent={
@@ -124,6 +135,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e2e8f0",
     marginBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   listName: {
     fontSize: 16,
