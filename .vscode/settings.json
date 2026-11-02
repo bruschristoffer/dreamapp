@@ -5,16 +5,20 @@
     "source.sortMembers": "explicit"
   },
   "workbench.colorCustomizations": {
-    "glaze.active": "Default Dark+",
-    "[Default Dark+]": {
-      "titleBar.activeBackground": "#474129",
-      "titleBar.activeForeground": "#e1dfd7",
-      "titleBar.inactiveBackground": "#383426",
-      "titleBar.inactiveForeground": "#b8b7b1",
-      "statusBar.background": "#4f472b",
-      "statusBar.foreground": "#e1dfd7",
-      "activityBar.background": "#343121",
-      "activityBar.foreground": "#d9d7cc"
+    "glaze.active": "Default Dark Modern",
+    "[Default Dark Modern]": {
+      "titleBar.activeBackground": "#474028",
+      "titleBar.activeForeground": "#deddd5",
+      "titleBar.inactiveBackground": "#383526",
+      "titleBar.inactiveForeground": "#a4a29b",
+      "titleBar.border": "#49432d",
+      "statusBar.background": "#4e4729",
+      "statusBar.foreground": "#deddd5",
+      "statusBar.border": "#50492e",
+      "statusBar.focusBorder": "#4c6389",
+      "activityBar.background": "#332f20",
+      "activityBar.foreground": "#dad8cd",
+      "activityBar.activeBorder": "#315587"
     }
   }
 }
