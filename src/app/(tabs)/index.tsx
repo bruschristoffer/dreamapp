@@ -1,29 +1,45 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Link, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { apiRequest } from "../services/api";
 
-const books = [
-  {
-    id: "1",
-    title: "Aniara",
-    author: "Harry Martinson",
-    status: "Läser",
-  },
-  {
-    id: "2",
-    title: "Atomic Habits",
-    author: "James Clear",
-    status: "Vill läsa",
-  },
-  {
-    id: "3",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    status: "Läst",
-  },
-];
+interface Book {
+  id: number | string;
+  title: string;
+  author?: string;
+  status?: string;
+}
 
 export default function MyBooksScreen() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBooks = async () => {
+    try {
+      setLoading(true);
+      const data = await apiRequest("/books");
+      setBooks(data);
+    } catch (err: any) {
+      console.error("kunde inte hämta bööcker:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks();
+    }, []),
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -48,38 +64,46 @@ export default function MyBooksScreen() {
 
       <Text style={styles.sectionTitle}>Sparade böcker</Text>
 
-      <FlatList
-        data={books}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.bookList}
-        renderItem={({ item }) => (
-          <View style={styles.bookCard}>
-            <View style={styles.bookInfo}>
-              <Text style={styles.bookTitle}>{item.title}</Text>
-              <Text style={styles.bookAuthor}>{item.author}</Text>
-              <Text style={styles.bookStatus}>Status: {item.status}</Text>
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color="#2563eb"
+          style={{ marginTop: 20 }}
+        />
+      ) : (
+        <FlatList
+          data={books}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.bookList}
+          renderItem={({ item }) => (
+            <View style={styles.bookCard}>
+              <View style={styles.bookInfo}>
+                <Text style={styles.bookTitle}>{item.title}</Text>
+                <Text style={styles.bookAuthor}>{item.author}</Text>
+                <Text style={styles.bookStatus}>Status: {item.status}</Text>
+              </View>
+              <Link
+                href={{
+                  pathname: "/book/[id]",
+                  params: { id: item.id.toString() },
+                }}
+                asChild
+              >
+                <Pressable style={styles.detailButton}>
+                  <Text style={styles.detailButtonText}>Visa detaljer ›</Text>
+                </Pressable>
+              </Link>
             </View>
-            <Link
-              href={{
-                pathname: "/book/[id]",
-                params: { id: item.id },
-              }}
-              asChild
-            >
-              <Pressable style={styles.detailButton}>
-                <Text style={styles.detailButtonText}>Visa detaljer ›</Text>
-              </Pressable>
-            </Link>
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              Du har inga sparade böcker ännu.
-            </Text>
-          </View>
-        }
-      />
+          )}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>
+                Du har inga sparade böcker ännu.
+              </Text>
+            </View>
+          }
+        />
+      )}
 
       <Link href="/(tabs)/add" asChild>
         <Pressable style={styles.addButton}>

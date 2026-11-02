@@ -1,13 +1,13 @@
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-
+const API_URL = "https://dreamapp-y1lt.onrender.com";
 export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const handleRegister = () => {
+  const handleRegister = async () => {
   if (!name.trim() || !email.trim() || !password || !confirmPassword) {
     alert("Fyll i alla fält");
     return;
@@ -18,7 +18,28 @@ export default function RegisterScreen() {
     return;
   }
 
-  alert("Formuläret är korrekt ifyllt");
+  try {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: name,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Kontot har skapats!");
+    } else {
+      alert(data.message || "Kunde inte skapa konto");
+    }
+  } catch (error) {
+    alert("Kunde inte ansluta till servern");
+  }
 };
   
   return (

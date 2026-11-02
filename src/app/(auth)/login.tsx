@@ -1,19 +1,53 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+const API_URL = "https://dreamapp-y1lt.onrender.com";
+
+const saveToken = async (token: string) => {
+  if (Platform.OS === "web") {
+    sessionStorage.setItem("token", token);
+  } else {
+    await SecureStore.setItemAsync("token", token);
+  }
+};
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = () => {
+  const handleLogin = async () => {
   if (!username.trim() || !password) {
     alert("Fyll i användarnamn och lösenord");
     return;
   }
 
-  alert("Fälten är ifyllda");
-};
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
 
+    const data = await response.json();
+
+  
+if (response.ok && data.token) {
+  await saveToken(data.token);
+  alert("Inloggningen lyckades!");
+  router.replace("/(tabs)");
+} else {
+  alert(data.message || "Kunde inte logga in");
+}
+
+  } catch (error) {
+    alert("Kunde inte ansluta till servern");
+  }
+};
   return (
     <View style={styles.container}>
     <Text style={styles.title}>BookList</Text>
