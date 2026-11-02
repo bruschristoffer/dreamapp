@@ -2,35 +2,37 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { apiRequest } from "../services/api";
+import { apiRequest, saveToken } from "../services/api";
 
 export default function RegisterScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async () => {
+    setErrorMessage("");
+
     if (!username.trim() || !password || !confirmPassword) {
-      Alert.alert("Fyll i alla fält");
+      setErrorMessage("Fyll i alla fält");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Lösenorden matchar inte");
+      setErrorMessage("Lösenorden matchar inte");
       return;
     }
 
     try {
       setLoading(true);
-      await apiRequest("/auth/register", {
+      const registerRes = await apiRequest("/auth/register", {
         method: "POST",
         body: JSON.stringify({
           username: username.trim(),
@@ -38,11 +40,27 @@ export default function RegisterScreen() {
         }),
       });
 
-      Alert.alert("Klart!", "konto har skapats!", [
-        { text: "OK", onPress: () => router.replace("/(auth)/login") },
-      ]);
+      let token = registerRes?.token;
+
+      if (!token) {
+        const loginRes = await apiRequest("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            username: username.trim(),
+            password: password,
+          }),
+        });
+        token = loginRes?.token;
+      }
+
+      if (token) {
+        await saveToken(token);
+        router.replace("/(tabs)");
+      } else {
+        router.replace("/(auth)/login");
+      }
     } catch (error: any) {
-      Alert.alert("Fel", error.message || "kunde inte skapa konto");
+      setErrorMessage(error.message || "Kunde inte skapas");
     } finally {
       setLoading(false);
     }
@@ -52,14 +70,21 @@ export default function RegisterScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Skapa konto</Text>
       <Text style={styles.subtitle}>Börja hålla koll på dina böcker</Text>
-
+      {errorMessage !== "" && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      )}
       <View style={styles.form}>
         <Text style={styles.label}>Användarnamn</Text>
         <TextInput
           style={styles.input}
           placeholder="Skriv ditt namn"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(val) => {
+            setUsername(val);
+            setErrorMessage("");
+          }}
           autoCapitalize="none"
         />
 
@@ -68,7 +93,10 @@ export default function RegisterScreen() {
           style={styles.input}
           placeholder="Skriv lösenord"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(val) => {
+            setPassword(val);
+            setErrorMessage("");
+          }}
           secureTextEntry
         />
 
@@ -77,7 +105,10 @@ export default function RegisterScreen() {
           style={styles.input}
           placeholder="Upprepa lösenord"
           value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          onChangeText={(val) => {
+            setConfirmPassword(val);
+            setErrorMessage("");
+          }}
           secureTextEntry
         />
       </View>
@@ -192,5 +223,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#334155",
+  },
+  errorBox: {
+    backgroundColor: "#fee2e2",
+    borderWidth: 1,
+    borderColor: "#fca5a5",
+  },
+  errorText: {
+    color: "#de2626",
   },
 });
