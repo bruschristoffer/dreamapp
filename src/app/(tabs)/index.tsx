@@ -1,29 +1,83 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Link, useFocusEffect } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-const books = [
-  {
-    id: "1",
-    title: "Aniara",
-    author: "Harry Martinson",
-    status: "Läser",
-  },
-  {
-    id: "2",
-    title: "Atomic Habits",
-    author: "James Clear",
-    status: "Vill läsa",
-  },
-  {
-    id: "3",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    status: "Läst",
-  },
-];
+type Book = {
+  id: number;
+  title: string;
+  author: string;
+  is_read: boolean;
+};
 
 export default function MyBooksScreen() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      const fetchBooks = async () => {
+        setIsLoading(true);
+        setError("");
+
+        try {
+          const token =
+            Platform.OS === "web"
+              ? sessionStorage.getItem("token")
+              : await SecureStore.getItemAsync("token");
+
+          if (!token) {
+            throw new Error("Du måste logga in först");
+          }
+
+          const response = await fetch(
+            "https://dreamapp-y1lt.onrender.com/books",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Kunde inte hämta böckerna");
+          }
+
+          const data: Book[] = await response.json();
+
+          if (active) {
+            setBooks(data);
+          }
+        } catch (err) {
+          if (active) {
+            setError(err instanceof Error ? err.message : "Något gick fel");
+          }
+        } finally {
+          if (active) {
+            setIsLoading(false);
+          }
+        }
+      };
+
+      fetchBooks();
+
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -47,22 +101,28 @@ export default function MyBooksScreen() {
       </View>
 
       <Text style={styles.sectionTitle}>Sparade böcker</Text>
+      {isLoading && <ActivityIndicator size="large" color="#2563eb" />}
 
+      {error !== "" && (
+        <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text>
+      )}
       <FlatList
         data={books}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.bookList}
         renderItem={({ item }) => (
           <View style={styles.bookCard}>
             <View style={styles.bookInfo}>
               <Text style={styles.bookTitle}>{item.title}</Text>
               <Text style={styles.bookAuthor}>{item.author}</Text>
-              <Text style={styles.bookStatus}>Status: {item.status}</Text>
+              <Text style={styles.bookStatus}>
+                Status: {item.is_read ? "Läst" : "Inte läst"}
+              </Text>
             </View>
             <Link
               href={{
                 pathname: "/book/[id]",
-                params: { id: item.id },
+                params: { id: String(item.id) },
               }}
               asChild
             >
@@ -73,11 +133,13 @@ export default function MyBooksScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              Du har inga sparade böcker ännu.
-            </Text>
-          </View>
+          !isLoading && !error ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>
+                Du har inga sparade böcker ännu.
+              </Text>
+            </View>
+          ) : undefined
         }
       />
 
