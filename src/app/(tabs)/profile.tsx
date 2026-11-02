@@ -1,7 +1,20 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
-
+import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 export default function ProfileScreen() {
+    const handleLogout = async () => {
+    try {
+      if (Platform.OS === "web") {
+        sessionStorage.removeItem("token");
+      } else {
+        await SecureStore.deleteItemAsync("token");
+      }
+
+      router.replace("/(auth)/login");
+    } catch (error) {
+      alert("Kunde inte logga ut");
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -15,9 +28,12 @@ export default function ProfileScreen() {
 
       {/* Logga ut */}
       <View style={styles.actions}>
-        <Link href="/(auth)/login" style={[styles.button, styles.logoutButton]}>
-          <Text style={styles.logoutButtonText}>Logga ut</Text>
-        </Link>
+        <Pressable
+  style={[styles.button, styles.logoutButton]}
+  onPress={handleLogout}
+>
+  <Text style={styles.logoutButtonText}>Logga ut</Text>
+</Pressable>
       </View>
     </View>
   );
