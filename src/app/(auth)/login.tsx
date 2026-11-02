@@ -2,7 +2,6 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -15,10 +14,13 @@ export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async () => {
+    setErrorMessage("");
+
     if (!username.trim() || !password) {
-      Alert.alert("Fyll i användarnamn och lösenord");
+      setErrorMessage("Fyll i användarnamn och lösenord");
       return;
     }
 
@@ -34,13 +36,12 @@ export default function LoginScreen() {
 
       if (data?.token) {
         await saveToken(data.token);
-        Alert.alert("Inloggningen lyckades!");
         router.replace("/(tabs)");
       } else {
-        Alert.alert(data?.message || "Kunde inte logga in");
+        setErrorMessage(data?.message || "Kunde inte logga in");
       }
     } catch (error: any) {
-      Alert.alert(error.message || "Kunde inte ansluta till servern");
+      setErrorMessage(error.message || "Kunde inte ansluta till servern");
     } finally {
       setLoading(false);
     }
@@ -52,6 +53,12 @@ export default function LoginScreen() {
         Spara böcker du vill läsa och håll koll på vad du läst.
       </Text>
 
+      {errorMessage !== "" && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      )}
+
       <View style={styles.form}>
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>Logga in</Text>
         <Text>Användarnamn</Text>
@@ -59,7 +66,10 @@ export default function LoginScreen() {
           style={styles.input}
           placeholder="Användarnamn"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(val) => {
+            setUsername(val);
+            setErrorMessage("");
+          }}
           autoCapitalize="none"
         />
 
@@ -68,7 +78,10 @@ export default function LoginScreen() {
           style={styles.input}
           placeholder="Lösenord"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(val) => {
+            setPassword(val);
+            setErrorMessage("");
+          }}
           secureTextEntry
         />
       </View>
@@ -163,5 +176,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginTop: 8,
+  },
+  errorBox: {
+    backgroundColor: "#fee2e2",
+    borderWidth: 1,
+    borderColor: "#fecaca",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: "#b91c1c",
+    textAlign: "center",
   },
 });
