@@ -9,34 +9,44 @@ import {
   Text,
   View,
 } from "react-native";
-import { apiRequest } from "../services/api";
-
-interface Book {
-  id: number | string;
-  title: string;
-  author?: string;
-  status?: string;
-}
+import { apiRequest, Book } from "../services/api";
 
 export default function MyBooksScreen() {
   const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      const data = await apiRequest("/books");
-      setBooks(data);
-    } catch (err: any) {
-      console.error("kunde inte hämta bööcker:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useFocusEffect(
     useCallback(() => {
+      let active = true;
+
+      const fetchBooks = async () => {
+        setIsLoading(true);
+        setError("");
+
+        try {
+          const data: Book[] = await apiRequest("/books");
+
+          if (active) {
+            setBooks(data ?? []);
+          }
+        } catch (err: any) {
+          console.error("Kunde inte hämta böcker:", err?.message || err);
+          if (active) {
+            setError(err instanceof Error ? err.message : "Något gick fel");
+          }
+        } finally {
+          if (active) {
+            setIsLoading(false);
+          }
+        }
+      };
+
       fetchBooks();
+
+      return () => {
+        active = false;
+      };
     }, []),
   );
 
@@ -64,28 +74,36 @@ export default function MyBooksScreen() {
 
       <Text style={styles.sectionTitle}>Sparade böcker</Text>
 
-      {loading ? (
+      {isLoading && (
         <ActivityIndicator
           size="large"
           color="#2563eb"
-          style={{ marginTop: 20 }}
+          style={{ marginVertical: 20 }}
         />
-      ) : (
+      )}
+
+      {error !== "" && (
+        <Text style={styles.errorText}>{error}</Text>
+      )}
+
+      {!isLoading && (
         <FlatList
           data={books}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.bookList}
           renderItem={({ item }) => (
             <View style={styles.bookCard}>
               <View style={styles.bookInfo}>
                 <Text style={styles.bookTitle}>{item.title}</Text>
                 <Text style={styles.bookAuthor}>{item.author}</Text>
-                <Text style={styles.bookStatus}>Status: {item.status}</Text>
+                <Text style={styles.bookStatus}>
+                  Status: {item.status ?? (item.is_read ? "Läst" : "Inte läst")}
+                </Text>
               </View>
               <Link
                 href={{
                   pathname: "/book/[id]",
-                  params: { id: item.id.toString() },
+                  params: { id: String(item.id) },
                 }}
                 asChild
               >
@@ -96,11 +114,13 @@ export default function MyBooksScreen() {
             </View>
           )}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>
-                Du har inga sparade böcker ännu.
-              </Text>
-            </View>
+            !error ? (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>
+                  Du har inga sparade böcker ännu.
+                </Text>
+              </View>
+            ) : undefined
           }
         />
       )}
@@ -148,12 +168,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e2e8f0",
   },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
     color: "#334155",
     marginBottom: 12,
+  },
+  errorText: {
+    color: "#dc2626",
+    marginBottom: 12,
+    fontSize: 14,
   },
   bookList: {
     gap: 12,

@@ -1,42 +1,60 @@
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { apiRequest } from "../services/api";
+import {
+  apiRequest,
+  BOOK_STATUSES,
+  BookStatus,
+  getToken,
+  showAlert,
+} from "../services/api";
 
 export default function AddBookScreen() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [status, setStatus] = useState("Vill läsa");
-  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<BookStatus>("Vill läsa");
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = async () => {
+  const handleSaveBook = async () => {
     if (!title.trim() || !author.trim()) {
-      Alert.alert("validering", "ange både titel och författare.");
+      showAlert("Validering", "Du måste ange både boktitel och författare.");
       return;
     }
 
+    const token = await getToken();
+    if (!token) {
+      showAlert("Fel", "Du måste logga in först.");
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
-      setSaving(true);
       await apiRequest("/books", {
         method: "POST",
-        body: JSON.stringify({ title, author, status }),
+        body: JSON.stringify({
+          title: title.trim(),
+          author: author.trim(),
+          status,
+          is_read: status === "Läst",
+        }),
       });
 
       setTitle("");
       setAuthor("");
+      showAlert("Klart", "Boken har sparats!");
       router.replace("/(tabs)");
     } catch (err: any) {
-      Alert.alert("fel", err.message || "Kunde inte spara");
+      showAlert("Fel", err?.message || "Kunde inte spara boken");
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
@@ -53,8 +71,8 @@ export default function AddBookScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Titel</Text>
           <TextInput
-            style={styles.input}
-            placeholder="T.ex. Dragon ball Z buu saga"
+            style={styles.inputBox}
+            placeholder="Ange boktitel (t.ex. Aniara)"
             value={title}
             onChangeText={setTitle}
           />
@@ -63,8 +81,8 @@ export default function AddBookScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Författare</Text>
           <TextInput
-            style={styles.input}
-            placeholder="T.ex. Aniara"
+            style={styles.inputBox}
+            placeholder="Ange författarens namn (t.ex. Harry Martinson)"
             value={author}
             onChangeText={setAuthor}
           />
@@ -73,7 +91,7 @@ export default function AddBookScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Lässtatus</Text>
           <View style={styles.statusOptions}>
-            {["Vill läsa", "läser", "läst"].map((item) => (
+            {BOOK_STATUSES.map((item) => (
               <Pressable
                 key={item}
                 onPress={() => setStatus(item)}
@@ -100,22 +118,24 @@ export default function AddBookScreen() {
       <View style={styles.actions}>
         <Pressable
           style={[styles.button, styles.primaryButton]}
-          onPress={handleSave}
-          disabled={saving}
+          onPress={handleSaveBook}
+          disabled={isSaving}
         >
-          {saving ? (
+          {isSaving ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
             <Text style={styles.primaryButtonText}>Spara bok</Text>
           )}
         </Pressable>
 
-        <Pressable
-          style={[styles.button, styles.secondaryButton]}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.secondaryButtonText}>Avbryt</Text>
-        </Pressable>
+        <Link href="/(tabs)" asChild>
+          <Pressable
+            style={[styles.button, styles.secondaryButton]}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.secondaryButtonText}>Avbryt</Text>
+          </Pressable>
+        </Link>
       </View>
     </View>
   );
@@ -158,10 +178,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#cbd5e1",
     backgroundColor: "#f8fafc",
-  },
-  placeholderText: {
-    fontSize: 14,
-    color: "#94a3b8",
+    fontSize: 15,
   },
   statusOptions: {
     flexDirection: "row",
@@ -218,5 +235,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
-  input: { borderWidth: 1, borderColor: "#cbd5e1" },
 });

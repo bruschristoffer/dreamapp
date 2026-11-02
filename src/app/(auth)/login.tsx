@@ -1,25 +1,15 @@
 import { Link, router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { apiRequest } from "../services/api";
-
-const saveToken = async (token: string) => {
-  if (Platform.OS === "web") {
-    sessionStorage.setItem("token", token);
-  } else {
-    await SecureStore.setItemAsync("token", token);
-  }
-};
+import { apiRequest, saveToken } from "../services/api";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -88,6 +78,7 @@ export default function LoginScreen() {
         <Pressable
           style={[styles.button, styles.primaryButton]}
           onPress={handleLogin}
+          disabled={loading}
         >
           {loading ? (
             <ActivityIndicator color="#ffffff" />
@@ -103,6 +94,7 @@ export default function LoginScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -136,7 +128,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    padding: 14,
+    paddingVertical: 14,
     borderRadius: 8,
     textAlign: "center",
     overflow: "hidden",

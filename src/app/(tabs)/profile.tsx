@@ -1,39 +1,34 @@
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-export default function ProfileScreen() {
-    const handleLogout = async () => {
-    try {
-      if (Platform.OS === "web") {
-        sessionStorage.removeItem("token");
-      } else {
-        await SecureStore.deleteItemAsync("token");
-      }
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { removeToken, showAlert } from "../services/api";
 
+export default function ProfileScreen() {
+  const handleLogout = async () => {
+    try {
+      await removeToken();
       router.replace("/(auth)/login");
-    } catch (error) {
-      alert("Kunde inte logga ut");
+    } catch {
+      showAlert("Fel", "Kunde inte logga ut");
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-   <Text style={styles.title}>Min profil</Text>
+        <Text style={styles.title}>Min profil</Text>
       </View>
-<View style={styles.card}>
-  <Text style={styles.cardTitle}>Mitt konto</Text>
-</View>
-
-
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Mitt konto</Text>
+      </View>
 
       {/* Logga ut */}
       <View style={styles.actions}>
         <Pressable
-  style={[styles.button, styles.logoutButton]}
-  onPress={handleLogout}
->
-  <Text style={styles.logoutButtonText}>Logga ut</Text>
-</Pressable>
+          style={[styles.button, styles.logoutButton]}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutButtonText}>Logga ut</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -54,10 +49,6 @@ const styles = StyleSheet.create({
     color: "#1e293b",
     marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 14,
-    color: "#64748b",
-  },
   card: {
     backgroundColor: "#ffffff",
     padding: 16,
@@ -72,34 +63,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#334155",
     marginBottom: 4,
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 4,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: "#64748b",
-  },
-  infoValue: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#0f172a",
-  },
-  settingItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 6,
-  },
-  settingLabel: {
-    fontSize: 14,
-    color: "#334155",
-  },
-  settingPlaceholder: {
-    fontSize: 13,
-    color: "#94a3b8",
   },
   actions: {
     marginTop: 8,
