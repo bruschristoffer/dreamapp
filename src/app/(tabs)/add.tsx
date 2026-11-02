@@ -1,4 +1,4 @@
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -128,14 +128,12 @@ export default function AddBookScreen() {
           )}
         </Pressable>
 
-        <Link href="/(tabs)" asChild>
-          <Pressable
-            style={[styles.button, styles.secondaryButton]}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.secondaryButtonText}>Avbryt</Text>
-          </Pressable>
-        </Link>
+        <Pressable
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.secondaryButtonText}>Avbryt</Text>
+        </Pressable>
       </View>
     </View>
   );
