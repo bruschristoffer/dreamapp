@@ -1,102 +1,104 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-const API_URL = "https://dreamapp-y1lt.onrender.com";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { apiRequest } from "../services/api";
+
 export default function RegisterScreen() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleRegister = async () => {
-  if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-    alert("Fyll i alla fält");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Lösenorden matchar inte");
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: name,
-        password: password,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert("Kontot har skapats!");
-    } else {
-      alert(data.message || "Kunde inte skapa konto");
+    if (!username.trim() || !password || !confirmPassword) {
+      Alert.alert("Fyll i alla fält");
+      return;
     }
-  } catch (error) {
-    alert("Kunde inte ansluta till servern");
-  }
-};
-  
+
+    if (password !== confirmPassword) {
+      alert("Lösenorden matchar inte");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password,
+        }),
+      });
+
+      Alert.alert("Klart!", "konto har skapats!", [
+        { text: "OK", onPress: () => router.replace("/(auth)/login") },
+      ]);
+    } catch (error: any) {
+      Alert.alert("Fel", error.message || "kunde inte skapa konto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Skapa konto</Text>
       <Text style={styles.subtitle}>Börja hålla koll på dina böcker</Text>
 
-      <View style={styles.formPlaceholder}>
-  <Text>Namn</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Skriv ditt namn"
-    value={name}
-    onChangeText={setName}
-  />
+      <View style={styles.form}>
+        <Text style={styles.label}>Användarnamn</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Skriv ditt namn"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
 
-  <Text>E-post</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Skriv din e-post"
-    value={email}
-    onChangeText={setEmail}
-    autoCapitalize="none"
-    keyboardType="email-address"
-  />
+        <Text style={styles.label}>Lösenord</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Skriv lösenord"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-  <Text>Lösenord</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Skriv lösenord"
-    value={password}
-    onChangeText={setPassword}
-    secureTextEntry
-  />
-
-  <Text>Bekräfta lösenord</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Upprepa lösenord"
-    value={confirmPassword}
-    onChangeText={setConfirmPassword}
-    secureTextEntry
-  />
-</View>
-
+        <Text style={styles.label}>Bekräfta lösenord</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Upprepa lösenord"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+      </View>
 
       <View style={styles.actions}>
         <Pressable
-  style={[styles.button, styles.primaryButton]}
-  onPress={handleRegister}
->
-  <Text style={styles.primaryButtonText}>Skapa konto</Text>
-</Pressable>
+          style={[styles.button, styles.primaryButton]}
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          {" "}
+          {loading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Skapa konto</Text>
+          )}
+        </Pressable>
 
         <Link href="/(auth)/login" style={styles.loginLink}>
-  Har du redan ett konto? Logga in
-</Link>
+          Har du redan ett konto? Logga in
+        </Link>
       </View>
     </View>
   );
@@ -152,8 +154,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   primaryButton: {
-  backgroundColor: "#000000",
-},
+    backgroundColor: "#000000",
+  },
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
@@ -172,9 +174,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   loginLink: {
-  color: "#000000",
-  fontSize: 14,
-  textAlign: "center",
-  marginTop: 8,
-},
+    color: "#000000",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 8,
+  },
+  input: {
+    padding: 12,
+    borderRadius: 8,
+    borderColor: "#cbd5e1",
+    borderWidth: 1,
+  },
+  form: {
+    gap: 12,
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#334155",
+  },
 });

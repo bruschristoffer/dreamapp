@@ -1,8 +1,17 @@
 import { Link, router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
-import { Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-const API_URL = "https://dreamapp-y1lt.onrender.com";
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { apiRequest } from "../services/api";
 
 const saveToken = async (token: string) => {
   if (Platform.OS === "web") {
@@ -15,83 +24,81 @@ const saveToken = async (token: string) => {
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleLogin = async () => {
-  if (!username.trim() || !password) {
-    alert("Fyll i användarnamn och lösenord");
-    return;
-  }
+    if (!username.trim() || !password) {
+      Alert.alert("Fyll i användarnamn och lösenord");
+      return;
+    }
 
-  try {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
+    try {
+      setLoading(true);
+      const data = await apiRequest("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
 
-    const data = await response.json();
-
-  
-if (response.ok && data.token) {
-  await saveToken(data.token);
-  alert("Inloggningen lyckades!");
-  router.replace("/(tabs)");
-} else {
-  alert(data.message || "Kunde inte logga in");
-}
-
-  } catch (error) {
-    alert("Kunde inte ansluta till servern");
-  }
-};
+      if (data?.token) {
+        await saveToken(data.token);
+        Alert.alert("Inloggningen lyckades!");
+        router.replace("/(tabs)");
+      } else {
+        Alert.alert(data?.message || "Kunde inte logga in");
+      }
+    } catch (error: any) {
+      Alert.alert(error.message || "Kunde inte ansluta till servern");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
-    <Text style={styles.title}>BookList</Text>
-<Text style={styles.subtitle}>
-  Spara böcker du vill läsa och håll koll på vad du läst.
-</Text>
+      <Text style={styles.title}>BookList</Text>
+      <Text style={styles.subtitle}>
+        Spara böcker du vill läsa och håll koll på vad du läst.
+      </Text>
 
+      <View style={styles.form}>
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>Logga in</Text>
+        <Text>Användarnamn</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Användarnamn"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
 
-    <View style={styles.formPlaceholder}>
-  <Text style={{ fontSize: 18, fontWeight: "bold" }}>Logga in</Text>
-  <Text>Användarnamn</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Användarnamn"
-    value={username}
-    onChangeText={setUsername}
-    autoCapitalize="none"
-  />
-
-  <Text>Lösenord</Text>
-  <TextInput
-    style={styles.inputPlaceholder}
-    placeholder="Lösenord"
-    value={password}
-    onChangeText={setPassword}
-    secureTextEntry
-  />
-</View>
+        <Text>Lösenord</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Lösenord"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
 
       {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
         <Pressable
-  style={[styles.button, styles.primaryButton]}
-  onPress={handleLogin}
->
-  <Text style={styles.primaryButtonText}>Logga in</Text>
-</Pressable>
-        
-  <Link href="/(auth)/register" style={styles.registerLink}>
-  Registrera
-</Link>
-        
+          style={[styles.button, styles.primaryButton]}
+          onPress={handleLogin}
+        >
+          {loading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Logga in</Text>
+          )}
+        </Pressable>
 
-        
+        <Link href="/(auth)/register" style={styles.registerLink}>
+          Registrera
+        </Link>
       </View>
     </View>
   );
@@ -104,22 +111,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   title: {
-  fontSize: 28,
-  fontWeight: "bold",
-  marginBottom: 8,
-  textAlign: "center",
-},
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+    textAlign: "center",
+  },
   subtitle: {
-  fontSize: 16,
-  color: "#666666",
-  marginBottom: 32,
-  textAlign: "center",
-},
-  formPlaceholder: {
+    fontSize: 16,
+    color: "#666666",
+    marginBottom: 32,
+    textAlign: "center",
+  },
+  form: {
     gap: 16,
     marginBottom: 24,
   },
-  inputPlaceholder: {
+  input: {
     padding: 14,
     borderWidth: 1,
     borderColor: "#dddddd",
@@ -135,8 +142,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   primaryButton: {
-  backgroundColor: "#000000",
-},
+    backgroundColor: "#000000",
+  },
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
@@ -160,10 +167,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   registerLink: {
-  color: "#000000",
-  fontSize: 14,
-  textAlign: "center",
-  marginTop: 8,
-},
+    color: "#000000",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 8,
+  },
 });
-
