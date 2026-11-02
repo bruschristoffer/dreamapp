@@ -86,7 +86,6 @@ export default function RegisterScreen() {
 </View>
 
 
-      {/* Navigationsknappar / åtgärder */}
       <View style={styles.actions}>
         <Pressable
   style={[styles.button, styles.primaryButton]}

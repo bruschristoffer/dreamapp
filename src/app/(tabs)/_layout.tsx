@@ -90,6 +90,20 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="reading-lists"
+        options={{
+          title: "Mina läslistor",
+          tabBarLabel: "Läslistor",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "list" : "list-outline"}
+              size={24}
+              color={color as string}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
