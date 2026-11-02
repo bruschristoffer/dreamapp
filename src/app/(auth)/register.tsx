@@ -88,7 +88,6 @@ export default function RegisterScreen() {
           onPress={handleRegister}
           disabled={loading}
         >
-          {" "}
           {loading ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
