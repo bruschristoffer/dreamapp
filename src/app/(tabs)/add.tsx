@@ -1,7 +1,45 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { apiRequest } from "../services/api";
 
 export default function AddBookScreen() {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [status, setStatus] = useState("Vill läsa");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!title.trim() || !author.trim()) {
+      Alert.alert("validering", "ange både titel och författare.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await apiRequest("/books", {
+        method: "POST",
+        body: JSON.stringify({ title, author, status }),
+      });
+
+      setTitle("");
+      setAuthor("");
+      router.replace("/(tabs)");
+    } catch (err: any) {
+      Alert.alert("fel", err.message || "Kunde inte spara");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -14,42 +52,70 @@ export default function AddBookScreen() {
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Titel</Text>
-          <View style={styles.inputBox}>
-            <Text style={styles.placeholderText}>[Inmatningsfält: Boktitel]</Text>
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="T.ex. Dragon ball Z buu saga"
+            value={title}
+            onChangeText={setTitle}
+          />
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Författare</Text>
-          <View style={styles.inputBox}>
-            <Text style={styles.placeholderText}>[Inmatningsfält: Författarens namn]</Text>
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="T.ex. Aniara"
+            value={author}
+            onChangeText={setAuthor}
+          />
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Lässtatus</Text>
           <View style={styles.statusOptions}>
-            <View style={[styles.statusBadge, styles.statusBadgeActive]}>
-              <Text style={styles.statusTextActive}>Vill läsa</Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>Läser</Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>Läst</Text>
-            </View>
+            {["Vill läsa", "läser", "läst"].map((item) => (
+              <Pressable
+                key={item}
+                onPress={() => setStatus(item)}
+                style={[
+                  styles.statusBadge,
+                  status === item && styles.statusBadgeActive,
+                ]}
+              >
+                <Text
+                  style={
+                    status === item
+                      ? styles.statusTextActive
+                      : styles.statusText
+                  }
+                >
+                  {item}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </View>
       </View>
 
       <View style={styles.actions}>
-        <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
-          <Text style={styles.primaryButtonText}>Spara bok</Text>
-        </Link>
+        <Pressable
+          style={[styles.button, styles.primaryButton]}
+          onPress={handleSave}
+          disabled={saving}
+        >
+          {saving ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Spara bok</Text>
+          )}
+        </Pressable>
 
-        <Link href="/(tabs)" style={[styles.button, styles.secondaryButton]}>
+        <Pressable
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => router.back()}
+        >
           <Text style={styles.secondaryButtonText}>Avbryt</Text>
-        </Link>
+        </Pressable>
       </View>
     </View>
   );
@@ -152,4 +218,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+  input: { borderWidth: 1, borderColor: "#cbd5e1" },
 });
