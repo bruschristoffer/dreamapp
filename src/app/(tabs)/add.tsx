@@ -1,7 +1,66 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Link, router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useState } from "react";
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function AddBookScreen() {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveBook = async () => {
+    if (!title.trim()) {
+      alert("Du måste ange en boktitel");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const token =
+        Platform.OS === "web"
+          ? sessionStorage.getItem("token")
+          : await SecureStore.getItemAsync("token");
+
+      if (!token) {
+        alert("Du måste logga in först");
+        return;
+      }
+
+      const response = await fetch("https://dreamapp-y1lt.onrender.com/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+          author: author.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Kunde inte spara boken");
+        return;
+      }
+
+      alert("Boken har sparats!");
+      router.replace("/(tabs)");
+    } catch (error) {
+      alert("Kunde inte ansluta till servern");
+    } finally {
+      setIsSaving(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -14,16 +73,22 @@ export default function AddBookScreen() {
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Titel</Text>
-          <View style={styles.inputBox}>
-            <Text style={styles.placeholderText}>[Inmatningsfält: Boktitel]</Text>
-          </View>
+          <TextInput
+            style={styles.inputBox}
+            placeholder="Ange boktitel"
+            value={title}
+            onChangeText={setTitle}
+          />
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Författare</Text>
-          <View style={styles.inputBox}>
-            <Text style={styles.placeholderText}>[Inmatningsfält: Författarens namn]</Text>
-          </View>
+          <TextInput
+            style={styles.inputBox}
+            placeholder="Ange författarens namn"
+            value={author}
+            onChangeText={setAuthor}
+          />
         </View>
 
         <View style={styles.inputGroup}>
@@ -43,9 +108,15 @@ export default function AddBookScreen() {
       </View>
 
       <View style={styles.actions}>
-        <Link href="/(tabs)" style={[styles.button, styles.primaryButton]}>
-          <Text style={styles.primaryButtonText}>Spara bok</Text>
-        </Link>
+        <Pressable
+          style={[styles.button, styles.primaryButton]}
+          onPress={handleSaveBook}
+          disabled={isSaving}
+        >
+          <Text style={styles.primaryButtonText}>
+            {isSaving ? "Sparar..." : "Spara bok"}
+          </Text>
+        </Pressable>
 
         <Link href="/(tabs)" style={[styles.button, styles.secondaryButton]}>
           <Text style={styles.secondaryButtonText}>Avbryt</Text>
